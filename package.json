@@ -1,0 +1,29 @@
+{
+  "name": "cross-converter",
+  "version": "0.0.0",
+  "description": "Cross-convert between multiple forms",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SafeMarket/cross-converter.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SafeMarket/cross-converter/issues"
+  },
+  "homepage": "https://github.com/SafeMarket/cross-converter#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "js-combinatorics": "^0.5.2",
+    "lodash": "^4.17.2",
+    "nobject": "0.0.3",
+    "testable-error": "0.0.3"
+  }
+}
