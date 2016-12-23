@@ -80,7 +80,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
 
 function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
 
-  let updateCount = 0
+  let isUpdated = false
   const formPairsUnpathed = []
 
   formPairs.forEach((formPair) => {
@@ -133,7 +133,7 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
 
       const path = pathBetweenFroms.concat(_path.slice(1, -1)).concat(pathBetweenTos)
 
-      updateCount += 1
+      isUpdated = true
       isPathFound = true
       paths.set(formPair, path)
     })
@@ -144,7 +144,7 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
 
   })
 
-  if (updateCount > 0) {
+  if (isUpdated) {
     updatePaths(formPairsUnpathed, paths, pathsAttempted, false)
   }
 
