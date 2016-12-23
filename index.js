@@ -26,17 +26,17 @@ function CrossConverter(converters) {
     })
   })
 
-  const combinationMethod = forms.length <= 31 ? 'combination' : 'bigCombination'
+  const combinationMethod = forms.length < 31 ? 'combination' : 'bigCombination'
   const combinations = combinatrics[combinationMethod](forms, 2)
 
-  combinations.forEach((pair) => {
+  while(pair = combinations.next()) {
     formPairs.push(pair)
     formPairs.push(pair.slice(0).reverse())
-  })
+  }
 
   const pathsAttempted = new Nobject
 
-  updatePaths(formPairs, paths, pathsAttempted)
+  updatePaths(formPairs, paths, pathsAttempted, true)
 
 }
 
@@ -78,7 +78,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
   return currentTruth
 }
 
-function updatePaths(formPairs, paths, pathsAttempted) {
+function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
 
   let updateCount = 0
   const formPairsUnpathed = []
@@ -87,16 +87,15 @@ function updatePaths(formPairs, paths, pathsAttempted) {
 
     const from = formPair[0]
     const to = formPair[1]
+    let isPathFound = false
 
-    let path = paths.get(formPair)
-
-    if (path && path.length === 2) {
+    if (isFirstPass && paths.get(formPair)) {
       return
     }
 
     paths.forEach((_formPair, _path) => {
 
-      const isPathAttempted = pathsAttempted.get(formPair.concat(_formPair))
+      const isPathAttempted = !isFirstPass && pathsAttempted.get(formPair.concat(_formPair))
 
       if (isPathAttempted) {
         return
@@ -107,58 +106,46 @@ function updatePaths(formPairs, paths, pathsAttempted) {
       const _from = _formPair[0]
       const _to = _formPair[1]
 
-      let pathBetweenFroms
-      let pathBetweenTos
-
       if (from === _to || _from === to) {
         return
       }
+
+      let pathBetweenFroms
+      let pathBetweenTos
 
       if (from === _from) {
         pathBetweenFroms = [from]
       } else {
         pathBetweenFroms = paths.get(from, _from)
-      }
-
-      if (!pathBetweenFroms) {
-        return
+        if (!pathBetweenFroms) {
+          return
+        }
       }
 
       if (to === _to) {
         pathBetweenTos = [to]
       } else {
         pathBetweenTos = paths.get(_to, to)
-      }
-
-      if (!pathBetweenTos) {
-        return
-      }
-
-      let lastStep
-      const potentialPath = pathBetweenFroms.concat(_path).concat(pathBetweenTos).filter((step) => {
-        if (step === lastStep) {
-          return false
+        if (!pathBetweenTos) {
+          return
         }
-        lastStep = step
-        return true
-      })
-
-      if (!path || potentialPath.length < path.length) {
-        updateCount += 1
-        paths.set(formPair, potentialPath)
-        path = potentialPath
       }
 
+      const path = pathBetweenFroms.concat(_path.slice(1, -1)).concat(pathBetweenTos)
+
+      updateCount += 1
+      isPathFound = true
+      paths.set(formPair, path)
     })
 
-    if (!paths.get(formPair)) {
+    if (!isPathFound) {
       formPairsUnpathed.push(formPair)
     }
 
   })
 
   if (updateCount > 0) {
-    updatePaths(formPairsUnpathed, paths, pathsAttempted)
+    updatePaths(formPairsUnpathed, paths, pathsAttempted, false)
   }
 
 }

@@ -4,6 +4,7 @@ const chai = require('chai')
 const FormNotStringError = require('../errors/FormNotString')
 const NoFormError = require('../errors/NoForm')
 const NoPathError = require('../errors/NoPath')
+const _ = require('lodash')
 
 chai.should()
 
@@ -101,6 +102,52 @@ describe('CrossConverter', () => {
 
     it('should convert kilometers to decimeters', () => {
       crossConverter.convert(1, 'kilometers', 'decimeters').should.equal(1000 * 10)
+    })
+  })
+
+  describe('small combo (10)', () => {
+
+    let bigCrossConverter
+
+    it('should time', () => {
+      const bigConverters = new Nobject
+      _.range(10).forEach((index) => {
+        bigConverters.set(index + '', index + 1 + '', (little) => {
+          return little + 1
+        })
+        bigConverters.set(index + 1 + '', index + '', (big) => {
+          return big - 1
+        })
+      })
+      bigCrossConverter = new CrossConverter(bigConverters)
+    })
+
+    it('should convert 0 to 10 and 10 to 0', () => {
+      bigCrossConverter.convert(0, '0', '10').should.equal(10)
+      bigCrossConverter.convert(0, '10', '0').should.equal(-10)
+    })
+  })
+
+  describe('big combo (32)', () => {
+
+    let bigCrossConverter
+
+    it('should time', () => {
+      const bigConverters = new Nobject
+      _.range(32).forEach((index) => {
+        bigConverters.set(index + '', index + 1 + '', (little) => {
+          return little + 1
+        })
+        bigConverters.set(index + 1 + '', index + '', (big) => {
+          return big - 1
+        })
+      })
+      bigCrossConverter = new CrossConverter(bigConverters)
+    })
+
+    it('should convert 0 to 32 and 32 to 0', () => {
+      bigCrossConverter.convert(0, '0', '32').should.equal(32)
+      bigCrossConverter.convert(0, '32', '0').should.equal(-32)
     })
   })
 
