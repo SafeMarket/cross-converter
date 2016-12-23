@@ -5,6 +5,8 @@ const FormNotStringError = require('./errors/FormNotString')
 const NoFormError = require('./errors/NoForm')
 const NoPathError = require('./errors/NoPath')
 
+let attempts = 0
+
 function CrossConverter(converters) {
   this.converters = converters
 
@@ -32,7 +34,9 @@ function CrossConverter(converters) {
     formPairs.push(pair.slice(0).reverse())
   })
 
-  updatePaths(formPairs, paths)
+  const pathsAttempted = new Nobject
+
+  updatePaths(formPairs, paths, pathsAttempted)
 
 }
 
@@ -74,7 +78,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
   return currentTruth
 }
 
-function updatePaths(formPairs, paths) {
+function updatePaths(formPairs, paths, pathsAttempted) {
 
   let updateCount = 0
   const formPairsUnpathed = []
@@ -91,6 +95,14 @@ function updatePaths(formPairs, paths) {
     }
 
     paths.forEach((_formPair, _path) => {
+
+      const isPathAttempted = pathsAttempted.get(formPair.concat(_formPair))
+
+      if (isPathAttempted) {
+        return
+      } else {
+        pathsAttempted.set(formPair.concat(_formPair), true)
+      }
 
       const _from = _formPair[0]
       const _to = _formPair[1]
@@ -146,7 +158,7 @@ function updatePaths(formPairs, paths) {
   })
 
   if (updateCount > 0) {
-    updatePaths(formPairsUnpathed, paths)
+    updatePaths(formPairsUnpathed, paths, pathsAttempted)
   }
 
 }
