@@ -35,8 +35,13 @@ function CrossConverter(converters, options) {
   const combinations = combinatrics[combinationMethod](forms, 2)
 
   while(pair = combinations.next()) {
-    formPairs.push(pair)
-    formPairs.push(pair.slice(0).reverse())
+    if (!paths.get(pair)) {
+      formPairs.push(pair)
+    }
+    const reversePair = pair.slice(0).reverse()
+    if (!paths.get(reversePair)) {
+      formPairs.push(reversePair)
+    }
   }
 
   const pathsAttempted = new Nobject

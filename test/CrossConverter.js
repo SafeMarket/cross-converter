@@ -214,7 +214,7 @@ describe('big combo (10)', () => {
 
   describe('async', () => {
     it('should instantiate', () => {
-      crossConverter = new CrossConverter(converters, { isAsync: true })
+      crossConverter = new CrossConverter(converters, { isAsync: true, chunkSize: 10 })
     })
 
     it('should be NOT be ready', () => {
