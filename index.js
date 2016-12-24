@@ -46,6 +46,10 @@ function CrossConverter(converters, options) {
 
   const pathsAttempted = new Nobject
 
+  if (this.options.formPairsSort) {
+    formPairs.sort(this.options.formPairsSort)
+  }
+
   if(!this.options.isAsync) {
     updatePaths(formPairs, paths, pathsAttempted, true)
     this.promise = Q.resolve(this)
