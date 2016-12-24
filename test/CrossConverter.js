@@ -254,7 +254,13 @@ describe('big combo (32)', () => {
     let crossConverter
 
     it('should instantiate', () => {
-      crossConverter = new CrossConverter(converters)
+      crossConverter = new CrossConverter(converters, {
+        formPairsSort: (formPairA, formPairB) => {
+          const difA = Math.abs(parseInt(formPairA[0]) - parseInt(formPairA[1]))
+          const difB = Math.abs(parseInt(formPairB[0]) - parseInt(formPairB[1]))
+          return difB - difA
+        }
+      })
     })
 
     it('should be ready', () => {

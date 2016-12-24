@@ -18,7 +18,7 @@ function CrossConverter(converters, options) {
   const forms = this.forms = []
   const formsObj = this.formsObj = {}
   const formPairs = this.formPairs = []
-  const paths = this.paths = new Nobject()
+  const paths = this.paths = this.options.paths || new Nobject()
 
   converters.forEach((formPair) => {
     paths.set(formPair, formPair)
