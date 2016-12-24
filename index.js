@@ -4,11 +4,16 @@ const _ = require('lodash')
 const FormNotStringError = require('./errors/FormNotString')
 const NoFormError = require('./errors/NoForm')
 const NoPathError = require('./errors/NoPath')
+const Q = require('q')
 
-let attempts = 0
-
-function CrossConverter(converters) {
+function CrossConverter(converters, options) {
   this.converters = converters
+  this.options = _.merge({
+    isAsync: false,
+    chunkSize: 100,
+    chunkWait: 100
+  }, options)
+  this.isReady = false
 
   const forms = this.forms = []
   const formsObj = this.formsObj = {}
@@ -36,7 +41,32 @@ function CrossConverter(converters) {
 
   const pathsAttempted = new Nobject
 
-  updatePaths(formPairs, paths, pathsAttempted, true)
+  if(!this.options.isAsync) {
+    updatePaths(formPairs, paths, pathsAttempted, true)
+    this.promise = Q.resolve(this)
+    this.isReady = true
+    return
+  }
+
+  const formPairsChunks = _.chunk(formPairs, this.options.chunkSize)
+  const deferred = Q.defer()
+  this.promise = deferred.promise
+
+  const updatePathsForNextChunk = (formPairsChunks) => {
+    const _formPairs = formPairsChunks.pop()
+    updatePaths(_formPairs, paths, pathsAttempted, true)
+
+    if (formPairsChunks.length > 0) {
+      setTimeout(() => {
+        updatePathsForNextChunk(formPairsChunks)
+      }, this.options.chunkWait)
+    } else {
+      this.isReady = true
+      deferred.resolve()
+    }
+  }
+
+  updatePathsForNextChunk(formPairsChunks)
 
 }
 

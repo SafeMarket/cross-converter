@@ -35,7 +35,7 @@ converters.set('ounces', 'pounds', (ounces) => {
   return ounces / 16
 })
 
-describe('CrossConverter', () => {
+describe('CrossConverter (sync)', () => {
 
   let crossConverter
 
@@ -105,49 +105,188 @@ describe('CrossConverter', () => {
     })
   })
 
-  describe('small combo (10)', () => {
+})
 
-    let bigCrossConverter
+describe('CrossConverter (async)', () => {
 
-    it('should time', () => {
-      const bigConverters = new Nobject
-      _.range(10).forEach((index) => {
-        bigConverters.set(index + '', index + 1 + '', (little) => {
-          return little + 1
-        })
-        bigConverters.set(index + 1 + '', index + '', (big) => {
-          return big - 1
-        })
-      })
-      bigCrossConverter = new CrossConverter(bigConverters)
+  let crossConverter
+
+  it('should instantiate', () => {
+    crossConverter = new CrossConverter(converters, {
+      isAsync: true
+    })
+    return crossConverter.promise
+  })
+
+  it('should have 6 forms', () => {
+    crossConverter.forms.length.should.equal(6)
+  })
+
+  describe('errors', () => {
+
+    it('null formFrom should throw FormNotStringError', () => {
+      (() => {
+        crossConverter.convert(1, 'meters', null)
+      }).should.throw(FormNotStringError)
     })
 
-    it('should convert 0 to 10 and 10 to 0', () => {
-      bigCrossConverter.convert(0, '0', '10').should.equal(10)
-      bigCrossConverter.convert(0, '10', '0').should.equal(-10)
+    it('null formTo should throw FormNotStringError', () => {
+      (() => {
+        crossConverter.convert(1, null, 'meters')
+      }).should.throw(FormNotStringError)
+    })
+
+    it('"feet" formFrom should throw NoFormError', () => {
+      (() => {
+        crossConverter.convert(1, 'feet', 'meters')
+      }).should.throw(NoFormError)
+    })
+
+    it('"feet" formTo should throw NoFormError', () => {
+      (() => {
+        crossConverter.convert(1, 'meters', 'feet')
+      }).should.throw(NoFormError)
+    })
+
+    it('should throw NoPathError', () => {
+      (() => {
+        crossConverter.convert(1, 'meters', 'pounds')
+      }).should.throw(NoPathError)
+    })
+
+  })
+
+  describe('convert', () => {
+    it('should return input when forms are the same', () => {
+      crossConverter.convert(1, 'meters', 'meters').should.equal(1)
     })
   })
 
-  describe('big combo (32)', () => {
+  describe('convert', () => {
+    it('should return input when forms are the same', () => {
+      crossConverter.convert(1, 'meters', 'meters').should.equal(1)
+    })
 
-    let bigCrossConverter
+    it('should convert pounds to ounces', () => {
+      crossConverter.convert(1, 'pounds', 'ounces').should.equal(16)
+    })
 
-    it('should time', () => {
-      const bigConverters = new Nobject
-      _.range(32).forEach((index) => {
-        bigConverters.set(index + '', index + 1 + '', (little) => {
-          return little + 1
-        })
-        bigConverters.set(index + 1 + '', index + '', (big) => {
-          return big - 1
-        })
-      })
-      bigCrossConverter = new CrossConverter(bigConverters)
+    it('should convert ounces to pounds', () => {
+      crossConverter.convert(16, 'ounces', 'pounds').should.equal(1)
+    })
+
+    it('should convert kilometers to decimeters', () => {
+      crossConverter.convert(1, 'kilometers', 'decimeters').should.equal(1000 * 10)
+    })
+  })
+
+})
+
+describe('big combo (10)', () => {
+
+  const converters = new Nobject
+  _.range(10).forEach((index) => {
+    converters.set(index + '', index + 1 + '', (little) => {
+      return little + 1
+    })
+    converters.set(index + 1 + '', index + '', (big) => {
+      return big - 1
+    })
+  })
+
+  describe('sync', () => {
+
+    let crossConverter
+
+    it('should instantiate', () => {
+      crossConverter = new CrossConverter(converters)
+    })
+
+    it('should be ready', () => {
+      crossConverter.isReady.should.equal(true)
+    })
+
+    it('should convert 0 to 10 and 10 to 0', () => {
+      crossConverter.convert(0, '0', '10').should.equal(10)
+      crossConverter.convert(0, '10', '0').should.equal(-10)
+    })
+  })
+
+  describe('async', () => {
+    it('should instantiate', () => {
+      crossConverter = new CrossConverter(converters, { isAsync: true })
+    })
+
+    it('should be NOT be ready', () => {
+      crossConverter.isReady.should.equal(false)
+    })
+
+    it('should wait for promise', () => {
+      return crossConverter.promise
+    })
+
+    it('should be ready', () => {
+      crossConverter.isReady.should.equal(true)
     })
 
     it('should convert 0 to 32 and 32 to 0', () => {
-      bigCrossConverter.convert(0, '0', '32').should.equal(32)
-      bigCrossConverter.convert(0, '32', '0').should.equal(-32)
+      crossConverter.convert(0, '0', '10').should.equal(10)
+      crossConverter.convert(0, '10', '0').should.equal(-10)
+    })
+  })
+
+})
+
+describe('big combo (32)', () => {
+
+  const converters = new Nobject
+  _.range(32).forEach((index) => {
+    converters.set(index + '', index + 1 + '', (little) => {
+      return little + 1
+    })
+    converters.set(index + 1 + '', index + '', (big) => {
+      return big - 1
+    })
+  })
+
+  describe('sync', () => {
+
+    let crossConverter
+
+    it('should instantiate', () => {
+      crossConverter = new CrossConverter(converters)
+    })
+
+    it('should be ready', () => {
+      crossConverter.isReady.should.equal(true)
+    })
+
+    it('should convert 0 to 32 and 32 to 0', () => {
+      crossConverter.convert(0, '0', '32').should.equal(32)
+      crossConverter.convert(0, '32', '0').should.equal(-32)
+    })
+  })
+
+  describe('async', () => {
+    it('should instantiate', () => {
+      crossConverter = new CrossConverter(converters, { isAsync: true })
+    })
+
+    it('should be NOT be ready', () => {
+      crossConverter.isReady.should.equal(false)
+    })
+
+    it('should wait for promise', () => {
+      return crossConverter.promise
+    })
+
+    it('should be ready', () => {
+      crossConverter.isReady.should.equal(true)
+    })
+
+    it('should convert 0 to 32 and 32 to 0', () => {
+      crossConverter.convert(0, '0', '32').should.equal(32)
+      crossConverter.convert(0, '32', '0').should.equal(-32)
     })
   })
 

@@ -4,7 +4,7 @@
   "description": "Cross-convert between multiple forms",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -t 10000"
+    "test": "mocha -t 20000 --bail"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "js-combinatorics": "^0.5.2",
     "lodash": "^4.17.2",
     "nobject": "0.0.3",
+    "q": "^1.4.1",
     "testable-error": "0.0.3"
   }
 }
