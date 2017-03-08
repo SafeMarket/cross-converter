@@ -4,6 +4,7 @@ const chai = require('chai')
 const FormNotStringError = require('../errors/FormNotString')
 const NoFormError = require('../errors/NoForm')
 const NoPathError = require('../errors/NoPath')
+const ConversionError = require('../errors/Conversion')
 const _ = require('lodash')
 
 chai.should()
@@ -35,6 +36,16 @@ converters.set('ounces', 'pounds', (ounces) => {
   return ounces / 16
 })
 
+converters.set('number', 'boolean', (number) => {
+  if (number === 0) {
+    return true
+  } else if (number === 1) {
+    return false
+  } else {
+    throw new Error('number must be 0 or 1')
+  }
+})
+
 describe('CrossConverter (sync)', () => {
 
   let crossConverter
@@ -43,8 +54,8 @@ describe('CrossConverter (sync)', () => {
     crossConverter = new CrossConverter(converters)
   })
 
-  it('should have 6 forms', () => {
-    crossConverter.forms.length.should.equal(6)
+  it('should have 8 forms', () => {
+    crossConverter.forms.length.should.equal(8)
   })
 
   describe('errors', () => {
@@ -118,8 +129,8 @@ describe('CrossConverter (async)', () => {
     return crossConverter.promise
   })
 
-  it('should have 6 forms', () => {
-    crossConverter.forms.length.should.equal(6)
+  it('should have 8 forms', () => {
+    crossConverter.forms.length.should.equal(8)
   })
 
   describe('errors', () => {
@@ -152,6 +163,12 @@ describe('CrossConverter (async)', () => {
       (() => {
         crossConverter.convert(1, 'meters', 'pounds')
       }).should.throw(NoPathError)
+    })
+
+    it('should throw ConversionError', () => {
+      (() => {
+        crossConverter.convert(3, 'number', 'boolean')
+      }).should.throw(ConversionError)
     })
 
   })

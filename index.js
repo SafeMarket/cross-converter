@@ -4,6 +4,7 @@ const _ = require('lodash')
 const FormNotStringError = require('./errors/FormNotString')
 const NoFormError = require('./errors/NoForm')
 const NoPathError = require('./errors/NoPath')
+const ConversionError = require('./errors/Conversion')
 const Q = require('q')
 
 function CrossConverter(converters, options) {
@@ -95,7 +96,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
 
   const converter = this.converters.get(formFrom, formTo)
   if (converter) {
-    return converter(truth)
+    return safeConvert(formFrom, formTo, converter, truth)
   }
 
   const path = this.paths.get(formFrom, formTo)
@@ -110,7 +111,8 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
     if (index === 0) {
       return
     }
-    currentTruth = this.converters.get(currentForm, step)(currentTruth)
+    const converter = this.converters.get(currentForm, step)
+    currentTruth = safeConvert(currentForm, step, converter, currentTruth)
     currentForm = step
   })
 
@@ -187,6 +189,14 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
     updatePaths(formPairsUnpathed, paths, pathsAttempted, false)
   }
 
+}
+
+function safeConvert(formFrom, formTo, converter, truth) {
+  try {
+    return converter(truth)
+  } catch (err) {
+    throw new ConversionError(truth, formFrom, formTo, err.message)
+  }
 }
 
 module.exports = CrossConverter
