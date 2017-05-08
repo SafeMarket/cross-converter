@@ -22,9 +22,7 @@
   },
   "dependencies": {
     "js-combinatorics": "^0.5.2",
-    "lodash": "^4.17.2",
-    "nobject": "0.0.3",
-    "q": "^1.4.1",
+    "nobject": "^0.1.0",
     "testable-error": "0.0.3"
   }
 }

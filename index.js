@@ -6,7 +6,6 @@ const _ = require('lodash')
 const NoFormError = require('./errors/NoForm')
 const NoPathError = require('./errors/NoPath')
 const ConversionError = require('./errors/Conversion')
-const Q = require('q')
 
 const optionsValidator = new Validator('Options', (options) => {
   if (options !== undefined && (options.constr)) {
@@ -17,7 +16,7 @@ const optionsValidator = new Validator('Options', (options) => {
 function CrossConverter(converters, options) {
   arguguard('CrossConverter', ['Nobject', optionsValidator], arguments)
   this.converters = converters
-  this.options = _.merge({}, options)
+  this.options = options || {}
 
   const forms = this.forms = []
   const formsObj = this.formsObj = {}
@@ -72,7 +71,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
   }
 
   const path = this.paths.get(formFrom, formTo)
-  if (_.isUndefined(path)) {
+  if (path === undefined) {
     throw new NoPathError(formFrom, formTo)
   }
 
