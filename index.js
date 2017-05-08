@@ -1,13 +1,21 @@
+const arguguard = require('arguguard')
 const Nobject = require('nobject')
+const Validator = require('arguguard/lib/Validator')
 const combinatrics = require('js-combinatorics')
 const _ = require('lodash')
-const FormNotStringError = require('./errors/FormNotString')
 const NoFormError = require('./errors/NoForm')
 const NoPathError = require('./errors/NoPath')
 const ConversionError = require('./errors/Conversion')
 const Q = require('q')
 
+const optionsValidator = new Validator('Options', (options) => {
+  if (options !== undefined && (options.constr)) {
+    throw new Error(`Expected either undefined or pojo, received ${options}`)
+  }
+})
+
 function CrossConverter(converters, options) {
+  arguguard('CrossConverter', ['Nobject', optionsValidator], arguments)
   this.converters = converters
   this.options = _.merge({
     isAsync: false,
@@ -81,10 +89,7 @@ function CrossConverter(converters, options) {
 }
 
 CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
-
-  if (typeof formFrom !== 'string' || typeof formTo !== 'string') {
-    throw new FormNotStringError
-  }
+  arguguard('crossConverter.convert', ['*', 'string', 'string'], arguments)
 
   if (formFrom === formTo) {
     return truth

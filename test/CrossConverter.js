@@ -1,7 +1,7 @@
 const Nobject = require('nobject')
 const CrossConverter = require('../')
 const chai = require('chai')
-const FormNotStringError = require('../errors/FormNotString')
+const UserArgumentTypeError = require('arguguard/errors/user/ArgumentType')
 const NoFormError = require('../errors/NoForm')
 const NoPathError = require('../errors/NoPath')
 const ConversionError = require('../errors/Conversion')
@@ -60,16 +60,16 @@ describe('CrossConverter (sync)', () => {
 
   describe('errors', () => {
 
-    it('null formFrom should throw FormNotStringError', () => {
+    it('null formFrom should throw UserArgumentTypeError', () => {
       (() => {
         crossConverter.convert(1, 'meters', null)
-      }).should.throw(FormNotStringError)
+      }).should.throw(UserArgumentTypeError)
     })
 
-    it('null formTo should throw FormNotStringError', () => {
+    it('null formTo should throw UserArgumentTypeError', () => {
       (() => {
         crossConverter.convert(1, null, 'meters')
-      }).should.throw(FormNotStringError)
+      }).should.throw(UserArgumentTypeError)
     })
 
     it('"feet" formFrom should throw NoFormError', () => {
@@ -135,16 +135,16 @@ describe('CrossConverter (async)', () => {
 
   describe('errors', () => {
 
-    it('null formFrom should throw FormNotStringError', () => {
+    it('null formFrom should throw UserArgumentTypeError', () => {
       (() => {
         crossConverter.convert(1, 'meters', null)
-      }).should.throw(FormNotStringError)
+      }).should.throw(UserArgumentTypeError)
     })
 
-    it('null formTo should throw FormNotStringError', () => {
+    it('null formTo should throw UserArgumentTypeError', () => {
       (() => {
         crossConverter.convert(1, null, 'meters')
-      }).should.throw(FormNotStringError)
+      }).should.throw(UserArgumentTypeError)
     })
 
     it('"feet" formFrom should throw NoFormError', () => {
