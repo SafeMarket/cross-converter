@@ -17,12 +17,7 @@ const optionsValidator = new Validator('Options', (options) => {
 function CrossConverter(converters, options) {
   arguguard('CrossConverter', ['Nobject', optionsValidator], arguments)
   this.converters = converters
-  this.options = _.merge({
-    isAsync: false,
-    chunkSize: 100,
-    chunkWait: 100
-  }, options)
-  this.isReady = false
+  this.options = _.merge({}, options)
 
   const forms = this.forms = []
   const formsObj = this.formsObj = {}
@@ -53,39 +48,11 @@ function CrossConverter(converters, options) {
     }
   }
 
-  const pathsAttempted = new Nobject
-
   if (this.options.formPairsSort) {
     formPairs.sort(this.options.formPairsSort)
   }
 
-  if(!this.options.isAsync) {
-    updatePaths(formPairs, paths, pathsAttempted, true)
-    this.promise = Q.resolve(this)
-    this.isReady = true
-    return
-  }
-
-  const formPairsChunks = _.chunk(formPairs, this.options.chunkSize)
-  const deferred = Q.defer()
-  this.promise = deferred.promise
-
-  const updatePathsForNextChunk = (formPairsChunks) => {
-    const _formPairs = formPairsChunks.pop()
-    updatePaths(_formPairs, paths, pathsAttempted, true)
-
-    if (formPairsChunks.length > 0) {
-      setTimeout(() => {
-        updatePathsForNextChunk(formPairsChunks)
-      }, this.options.chunkWait)
-    } else {
-      this.isReady = true
-      deferred.resolve()
-    }
-  }
-
-  updatePathsForNextChunk(formPairsChunks)
-
+  updatePaths(formPairs, paths, new Nobject, true)
 }
 
 CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
