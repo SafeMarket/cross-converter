@@ -149,9 +149,11 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
         const _index = path.lastIndexOf(form)
         if (_index !== index) {
           path.splice(index + 1, _index - index)
+          return false
         }
-        return false
       })
+
+      console.log(path)
 
       isUpdated = true
       isPathFound = true
