@@ -147,7 +147,7 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
 
       _.forEach(path, (form, index) => {
         const _index = path.lastIndexOf(form)
-        if (path.lastIndexOf(form) !== index) {
+        if (_index !== index) {
           path.splice(index + 1, _index - index)
         }
         return false
