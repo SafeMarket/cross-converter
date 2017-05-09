@@ -153,8 +153,6 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
         }
       })
 
-      console.log(path)
-
       isUpdated = true
       isPathFound = true
       paths.set(formPair, path)
