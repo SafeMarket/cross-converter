@@ -145,9 +145,18 @@ function updatePaths(formPairs, paths, pathsAttempted, isFirstPass) {
 
       const path = pathBetweenFroms.concat(_path.slice(1, -1)).concat(pathBetweenTos)
 
+      _.forEach(path, (form, index) => {
+        const _index = path.lastIndexOf(form)
+        if (path.lastIndexOf(form) !== index) {
+          path.splice(index + 1, _index - index)
+        }
+        return false
+      })
+
       isUpdated = true
       isPathFound = true
       paths.set(formPair, path)
+      return false
     })
 
     if (!isPathFound) {

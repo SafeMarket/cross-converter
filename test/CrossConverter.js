@@ -9,6 +9,17 @@ const _ = require('lodash')
 
 chai.should()
 
+function shuffle(a) {
+  var j, x, i;
+  for (i = a.length; i; i--) {
+    j = Math.floor(Math.random() * i);
+    x = a[i - 1];
+    a[i - 1] = a[j];
+    a[j] = x;
+  }
+  return a
+}
+
 const converters = new Nobject()
 converters.set('meters', 'centimeters', (meters) => {
   return meters * 100
@@ -121,7 +132,7 @@ describe('CrossConverter', () => {
 describe('big combo (10)', () => {
 
   const converters = new Nobject
-  _.range(10).forEach((index) => {
+  shuffle(_.range(10)).forEach((index) => {
     converters.set(index + '', index + 1 + '', (little) => {
       return little + 1
     })
@@ -145,7 +156,7 @@ describe('big combo (10)', () => {
 describe('big combo (32)', () => {
 
   const converters = new Nobject
-  _.range(32).forEach((index) => {
+  shuffle(_.range(32)).forEach((index) => {
     converters.set(index + '', index + 1 + '', (little) => {
       return little + 1
     })
