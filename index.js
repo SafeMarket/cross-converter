@@ -55,7 +55,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
   }
 
   if (this.formsObj[formTo] !== true) {
-    throw new NoConverterError(`No converter for form "${formFrom}"`)
+    throw new NoConverterError(`No converter for form "${formTo}"`)
   }
 
   const path = this.paths.get(formFrom, formTo)
