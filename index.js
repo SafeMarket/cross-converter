@@ -8,7 +8,7 @@ const NoPathError = require('./errors/NoPath')
 const ConversionError = require('./errors/Conversion')
 
 const optionsValidator = new Validator('Options', (options) => {
-  if (options !== undefined && (options.constr)) {
+  if (options !== undefined && (options.constructor.name !== 'Object')) {
     throw new Error(`Expected either undefined or pojo, received ${options}`)
   }
 })
