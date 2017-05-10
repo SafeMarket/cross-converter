@@ -18,40 +18,42 @@ function CrossConverter(converters, options) {
   this.converters = converters
   this.options = options || {}
 
-  const forms = this.forms = []
-  const formsObj = this.formsObj = {}
-  const formPairs = this.formPairs = []
-  const paths = this.paths = this.options.paths || new Nobject()
+  this.forms = []
+  this.formsObj = {}
+  this.formPairs = []
+  this.paths = this.options.paths || new Nobject()
 
   converters.forEach((formPair) => {
-    paths.set(formPair, formPair)
+    this.paths.set(formPair, formPair)
     formPair.forEach((form) => {
-      if (formsObj[form] === true) {
+      if (this.formsObj[form] === true) {
         return
       }
-      formsObj[form] = true
-      forms.push(form)
+      this.formsObj[form] = true
+      this.forms.push(form)
     })
   })
+}
 
-  const combinationMethod = forms.length < 31 ? 'combination' : 'bigCombination'
-  const combinations = combinatrics[combinationMethod](forms, 2)
+CrossConverter.prototype.derivePaths = function() {
+  const combinationMethod = this.forms.length < 31 ? 'combination' : 'bigCombination'
+  const combinations = combinatrics[combinationMethod](this.forms, 2)
 
   while(pair = combinations.next()) {
-    if (!paths.get(pair)) {
-      formPairs.push(pair)
+    if (!this.paths.get(pair)) {
+      this.formPairs.push(pair)
     }
     const reversePair = pair.slice(0).reverse()
-    if (!paths.get(reversePair)) {
-      formPairs.push(reversePair)
+    if (!this.paths.get(reversePair)) {
+      this.formPairs.push(reversePair)
     }
   }
 
   if (this.options.formPairsSort) {
-    formPairs.sort(this.options.formPairsSort)
+    this.formPairs.sort(this.options.formPairsSort)
   }
 
-  updatePaths(formPairs, paths, new Nobject, true)
+  updatePaths(this.formPairs, this.paths, new Nobject, true)
 }
 
 CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
@@ -61,7 +63,11 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
     return truth
   }
 
-  if (this.formsObj[formFrom] !== true || this.formsObj[formTo] !== true) {
+  if (this.formsObj[formFrom] !== true) {
+    throw new NoFormError(formFrom)
+  }
+
+  if (this.formsObj[formTo] !== true) {
     throw new NoFormError(formTo)
   }
 

@@ -122,7 +122,14 @@ describe('CrossConverter', () => {
       crossConverter.convert(16, 'ounces', 'pounds').should.equal(1)
     })
 
-    it('should convert kilometers to decimeters', () => {
+    it('should NOT convert kilometers to decimeters (no path)', () => {
+      (() => {
+        crossConverter.convert(1, 'kilometers', 'decimeters').should.equal(1000 * 10)
+      }).should.throw(NoPathError)
+    })
+
+    it('should convert kilometers to decimeters after setting a path', () => {
+      crossConverter.paths.set('kilometers', 'decimeters', ['kilometers', 'meters', 'centimeters', 'decimeters'])
       crossConverter.convert(1, 'kilometers', 'decimeters').should.equal(1000 * 10)
     })
   })
@@ -143,8 +150,9 @@ describe('big combo (10)', () => {
 
   let crossConverter
 
-  it('should instantiate', () => {
+  it('should instantiate and derive paths', () => {
     crossConverter = new CrossConverter(converters)
+    crossConverter.derivePaths()
   })
 
   it('should convert 0 to 10 and 10 to 0', () => {
@@ -175,6 +183,7 @@ describe('big combo (32)', () => {
         return difB - difA
       }
     })
+    crossConverter.derivePaths()
   })
 
   it('should convert 0 to 32 and 32 to 0', () => {
