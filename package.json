@@ -21,6 +21,7 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
+    "arguguard": "^2.1.1",
     "js-combinatorics": "^0.5.2",
     "nobject": "^0.1.0",
     "testable-error": "0.0.3"
