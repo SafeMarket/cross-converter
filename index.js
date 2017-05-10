@@ -3,26 +3,14 @@ const forEach = require('lodash.foreach')
 const NoPathError = require('./errors/NoPath')
 const NoConverterError = require('./errors/NoConverter')
 const ConversionError = require('./errors/Conversion')
+const Nobject = require('nobject')
 
-function pojoGet(pojo, from, to) {
-  if (pojo[from] === undefined) {
-    return undefined
-  }
-  return pojo[from][to]
-}
-
-function pojoSet(pojo, from, to, thing) {
-  if (pojo[from] === undefined) {
-    pojo[from] = {}
-  }
-  pojo[from][to] = thing
-}
 
 function CrossConverter() {
   arguguard('CrossConverter', [], arguments)
-  this.converters = {}
+  this.converters = new Nobject
+  this.paths = new Nobject
   this.formsObj = {}
-  this.paths = {}
 }
 
 CrossConverter.prototype.addConverter = function addConverter(from, to, converter) {
@@ -33,8 +21,8 @@ CrossConverter.prototype.addConverter = function addConverter(from, to, converte
       this.formsObj[form] = true
     }
   })
-  pojoSet(this.paths, from, to, [from, to])
-  pojoSet(this.converters, from, to, converter)
+  this.paths.set(from, to, [from, to])
+  this.converters.set(from, to, converter)
 }
 
 CrossConverter.prototype.addPath = function addPath(path) {
@@ -46,13 +34,13 @@ CrossConverter.prototype.addPath = function addPath(path) {
     }
     const from = path[index - 1]
     const to =form
-    if (pojoGet(this.converters, from, to) === undefined) {
+    if (this.converters.get(from, to) === undefined) {
       throw new NoConverterError(`No converter from form "${from}" to form "${to}"`)
     }
   })
   const from = path[0]
   const to = path[path.length - 1]
-  pojoSet(this.paths, from, to, path)
+  this.paths.set(from, to, path)
 }
 
 CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
@@ -70,7 +58,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
     throw new NoConverterError(`No converter for form "${formFrom}"`)
   }
 
-  const path = pojoGet(this.paths, formFrom, formTo)
+  const path = this.paths.get(formFrom, formTo)
   if (path === undefined) {
     throw new NoPathError(`No path from "${formFrom}" to "${formTo}"`)
   }
@@ -82,7 +70,7 @@ CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
     if (index === 0) {
       return
     }
-    const converter = pojoGet(this.converters, currentForm, step)
+    const converter = this.converters.get(currentForm, step)
     if (converter === undefined) {
       throw new NoConverterError(`No converter from form "${currentForm}" to "${step}"`)
     }
