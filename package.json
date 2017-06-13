@@ -1,6 +1,6 @@
 {
   "name": "cross-converter",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "description": "Cross-convert between multiple forms",
   "main": "index.js",
   "scripts": {
