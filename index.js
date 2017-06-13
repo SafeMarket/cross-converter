@@ -43,6 +43,21 @@ CrossConverter.prototype.addPath = function addPath(path) {
   this.paths.set(from, to, path)
 }
 
+CrossConverter.prototype.addPathUnsafe = function addPathUnsafe(path) {
+  arguguard('crossConverter.addPathUnsafe', ['[]string'], arguments)
+
+  path.forEach((form, index) => {
+    if (index === 0) {
+      return
+    }
+    const from = path[index - 1]
+    const to =form
+  })
+  const from = path[0]
+  const to = path[path.length - 1]
+  this.paths.set(from, to, path)
+}
+
 CrossConverter.prototype.convert = function convert(truth, formFrom, formTo) {
   arguguard('crossConverter.convert', ['*', 'string', 'string'], arguments)
 

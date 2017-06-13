@@ -88,6 +88,10 @@ describe('CrossConverter', () => {
       }).should.throw(NoConverterError)
     })
 
+    it('should NOT throw NoConverterError when adding invalid path (unsafe)', () => {
+      crossConverter.addPathUnsafe(['kilometers', 'centimeters', 'decimeters'])
+    })
+
   })
 
   describe('convert', () => {
